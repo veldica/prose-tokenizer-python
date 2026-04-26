@@ -22,7 +22,7 @@ from .types import (
 from .utils import get_character_metrics, is_stopword
 from .words import split_words
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 __all__ = [
     "tokenize",

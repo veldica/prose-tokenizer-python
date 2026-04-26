@@ -1,20 +1,22 @@
 # prose-tokenizer
 
-Lightweight, deterministic, dependency-free Python library for tokenizing English prose and Markdown into blocks, paragraphs, sentences, words, and structural metrics.
-
+[![PyPI Version](https://img.shields.io/pypi/v/prose-tokenizer)](https://pypi.org/project/prose-tokenizer/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-blue)](pyproject.toml)
 
-`prose-tokenizer` is built for writing tools, LLM preprocessing, readability tools, and lightweight text analysis where consistency and speed are more important than complex NLP models.
+A high-precision, rule-based prose tokenizer and sentence segmentation library for English and Markdown. Designed for accurate splitting of paragraphs, sentences, and words in AI pipelines, LLM context window management, and editorial automation.
+
+`prose-tokenizer` is built for writing tools, LLM preprocessing, readability tools, and lightweight text analysis where consistency and speed are more important than complex, probabilistic NLP models.
 
 ## Features
 
-- **Deterministic**: Rule-based logic ensures the same output every time.
-- **Markdown-Aware**: Correctly segments headings, list items, and blockquotes.
-- **Smart Sentence Splitting**: Handles prefix abbreviations (Mr., Dr.), acronyms (U.S.A.), and decimals (10.5) without breaking sentences.
-- **Structure Analysis**: Access text at the block, paragraph, sentence, or word level.
-- **Character Metrics**: Total characters, non-whitespace characters, and alphanumeric counts.
-- **Zero Dependencies**: Pure Python with no runtime requirements.
-- **Fully Typed**: Built with PEP 484 type hints.
+- **Deterministic Rule-Based Engine**: Consistent, predictable output without the overhead or unpredictability of machine learning models.
+- **Markdown-Native Support**: Properly handles structural elements including headings (# and Setext), list items (*, -, +, 1.), and blockquotes (>).
+- **Intelligent Sentence Segmentation**: Respects English prose heuristics such as prefix titles (Dr., Mr.), acronyms (U.S.A.), initials (J.R.R. Tolkien), and interior decimals.
+- **Hierarchical Analysis**: Access text at the block, paragraph, sentence, or word level with a single call.
+- **Character Metrics**: Accurate counts for total characters, non-whitespace characters, and alphanumeric letter counts.
+- **Zero Dependencies**: Pure Python implementation with no runtime requirements.
+- **Fully Typed**: Built with PEP 484 type hints for excellent IDE support.
 
 ## Installation
 
@@ -42,34 +44,51 @@ print(doc.blocks[0].kind)        # "heading"
 print(doc.sentences[1])          # "The U.S.A. economy grew by 2.5% in Q1."
 ```
 
-## What it handles
-- **Markdown structural elements**: Headings (# and Setext), list items (*, -, +, 1.), blockquotes (>).
-- **English prose heuristics**: Initials (J.R.R. Tolkien), common abbreviations (Jan., etc., vs.), and prefix titles (Dr., Rev.).
-- **Complex word tokens**: Contractions (can't), hyphenated words (high-tech), and numbers with commas (1,000) or decimals (2.5).
-
-## What it is not
-- **Not a full NLP suite**: Does not perform POS tagging, NER, or dependency parsing. Use spaCy or NLTK for those.
-- **Not multi-lingual**: Optimized specifically for English prose.
-- **Not AI-powered**: Uses deterministic rules and regular expressions, not machine learning models.
-
-## Use Cases
-- **LLM Preprocessing**: Chunking text into logical paragraphs or sentences for RAG or context windows.
-- **Writing Tools**: Real-time statistics for word count, sentence length, and readability metrics.
-- **Clean Text Extraction**: Removing Markdown noise while preserving structural context.
-
-## API Overview
+## API Reference
 
 ### `tokenize(text: str) -> TokenizedDocument`
-Full analysis of the input text. Returns a dataclass containing `blocks`, `paragraphs`, `sentences`, `words`, and `counts`.
+The primary entry point for full document analysis. Returns a dataclass containing:
+- `blocks`: List of `ParagraphBlock` objects (includes `text`, `kind`, `line_start`, and `line_end`).
+- `paragraphs`: List of raw paragraph strings.
+- `sentences`: List of sentence strings.
+- `words`: List of lowercase word tokens.
+- `counts`: `StructureCounts` object with aggregated metrics.
+
+`tokenize_prose` is provided as an alias for this function.
 
 ### `split_sentences(text: str) -> List[str]`
-Returns a list of sentences, protecting abbreviations and acronyms.
+Splits prose into a list of sentence strings using deterministic rules that protect abbreviations and decimal numbers.
+
+### `split_paragraphs(text: str) -> List[str]`
+Splits text into a list of raw paragraph strings based on double newlines.
 
 ### `split_words(text: str) -> List[str]`
-Returns a list of lowercase words, preserving contractions and hyphenation.
+Splits text into lowercase alphanumeric word tokens, preserving contractions (e.g., "can't") and interior hyphens or decimals.
 
 ### `get_character_metrics(text: str) -> CharacterMetrics`
-Calculates total length, length without spaces, and alphanumeric letter counts.
+Calculates character-level statistics:
+- `character_count`: Total character length.
+- `character_count_no_spaces`: Count excluding whitespace.
+- `letter_count`: Count of alphanumeric letters (a-z, A-Z, 0-9).
+
+### `get_structure_counts(text: str) -> StructureCounts`
+A convenience function that returns structural metrics without full tokenization arrays. Includes `word_count`, `sentence_count`, `paragraph_count`, `heading_count`, `list_item_count`, and `blockquote_count`.
+
+### `is_stopword(word: str) -> bool`
+Checks if a word is a common English stopword.
+
+## Practical Use Cases
+
+- **LLM Preprocessing**: Chunking text into logical paragraphs or sentences for RAG or context window management while preserving Markdown structure.
+- **Writing Tools**: Real-time statistics for word count, sentence length, and readability metrics (e.g., Flesch-Kincaid).
+- **Clean Text Extraction**: Removing or identifying Markdown noise while preserving structural context.
+- **Search Indexing**: Generating clean, lowercase word tokens for search engines.
+
+## Limitations
+
+- **Language Support**: Optimized specifically for English prose.
+- **NLP Scope**: Does not perform POS tagging, NER, or dependency parsing.
+- **Rule-Based**: While highly accurate, it uses deterministic heuristics rather than probabilistic context analysis.
 
 ## Development
 
@@ -87,14 +106,14 @@ ruff check .
 mypy .
 ```
 
-## Release Checklist
-1. Update version in `pyproject.toml` and `prose_tokenizer/__init__.py`.
-2. Update `CHANGELOG.md`.
-3. Run full test suite: `pytest && ruff check . && mypy .`.
-4. Build package: `python -m build`.
-5. Check distribution: `twine check dist/*`.
-6. Upload to PyPI: `twine upload dist/*`.
+## Ownership & Authority
+
+This package is maintained by **Veldica Research** as a core part of our writing analysis platform. Built for production environments that demand high reliability, precision, and performance.
+
+- **Full Documentation**: [veldica.com/python-prose-tokenizer](https://veldica.com/python-prose-tokenizer)
+- **Veldica Platform**: [veldica.com](https://veldica.com)
+- **Report Bugs**: [GitHub Issues](https://github.com/veldica/prose-tokenizer-python/issues)
 
 ## License
 
-MIT © [Veldica](https://veldica.com)
+MIT © [Veldica Research](https://veldica.com)
