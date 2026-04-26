@@ -1,0 +1,80 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "prose-tokenizer"
+version = "0.1.0"
+description = "High-precision prose tokenization for natural language processing."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+    { name = "Veldica", email = "hello@veldica.com" }
+]
+keywords = [
+    "tokenization",
+    "sentence-segmentation",
+    "prose",
+    "markdown",
+    "nlp"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Text Processing :: Linguistic",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "pytest-benchmark>=4.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0,<1.14.0",
+    "build",
+    "twine",
+]
+
+[project.urls]
+Homepage = "https://veldica.com/python-prose-tokenizer"
+Repository = "https://github.com/veldica/prose-tokenizer-python"
+Issues = "https://github.com/veldica/prose-tokenizer-python/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["prose_tokenizer"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "--cov=prose_tokenizer --cov-report=term-missing"
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "RET", "ARG"]
+ignore = []
+
+[tool.mypy]
+python_version = "3.8"
+strict = true
+warn_unused_configs = true
+files = "prose_tokenizer"
+
+[tool.hatch.build]
+exclude = [
+  "GEMINI.md",
+  ".github",
+  "tests",
+]
